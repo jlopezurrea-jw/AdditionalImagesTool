@@ -4,96 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bulk Image Uploader</title>
+  <link rel="stylesheet" href="https://se-shared-assets-dfb3a6.gitlab.io/se-base.css">
   <style>
-    :root {
-      --bg: #0f131c;
-      --panel: #161c28;
-      --panel-2: #1d2533;
-      --line: #2c3648;
-      --text: #eef3fb;
-      --muted: #9fb0c7;
-      --accent: #34a6ff;
-      --good: #6fdf9b;
-      --bad: #ff7a7a;
-      --warning: #ffd16b;
-    }
-
     * {
       box-sizing: border-box;
     }
 
     body {
       margin: 0;
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg, #0c1017 0%, #131926 100%);
-      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #F7F8FA;
+      color: #3D3D4E;
       min-height: 100vh;
     }
 
-    .header {
-      background: #0b0f16;
-      border-bottom: 1px solid #222b3b;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    .se-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .se-header {
+      margin-bottom: 16px;
     }
 
-    .logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: radial-gradient(circle at 30% 30%, #79ccff 0%, #34a6ff 40%, #0070c9 100%);
-      color: #041520;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      font-size: 12px;
-      box-shadow: 0 0 0 3px rgba(52, 166, 255, 0.2);
-    }
-
-    .brand h1 {
-      font-size: 18px;
-      line-height: 1.2;
+    .se-header h1 {
       margin: 0;
+      font-size: 28px;
       font-weight: 700;
+      color: #1A1A2E;
     }
 
-    .brand p {
-      margin: 2px 0 0;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    main {
-      width: min(1200px, 94vw);
-      margin: 24px auto 36px;
+    .se-content {
       display: grid;
       gap: 16px;
     }
 
     .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      overflow: hidden;
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 24px;
     }
 
     .panel-head {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      background: var(--panel-2);
+      margin: 0 0 16px;
+      color: #1A1A2E;
       font-weight: 600;
     }
 
@@ -108,16 +64,16 @@
       display: grid;
       gap: 6px;
       font-size: 13px;
-      color: var(--muted);
+      color: #6B7280;
     }
 
     input[type="text"],
     input[type="password"] {
       width: 100%;
-      border: 1px solid #334159;
-      border-radius: 8px;
-      background: #111826;
-      color: var(--text);
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      background: #FFFFFF;
+      color: #3D3D4E;
       padding: 10px 12px;
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -125,17 +81,17 @@
 
     input[type="file"] {
       width: 100%;
-      border: 1px dashed #3b4b66;
-      border-radius: 8px;
-      background: #111826;
-      color: var(--muted);
+      border: 1px solid #E5E7EB;
+      border-radius: 6px;
+      background: #FFFFFF;
+      color: #3D3D4E;
       padding: 8px;
       font-size: 12px;
     }
 
     input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(52, 166, 255, 0.18);
+      border-color: #1A5CFF;
+      box-shadow: 0 0 0 3px rgba(26, 92, 255, 0.14);
     }
 
     .table-wrap {
@@ -149,19 +105,18 @@
 
     th,
     td {
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid #E5E7EB;
       padding: 10px 12px;
       text-align: left;
       vertical-align: middle;
       font-size: 13px;
+      color: #3D3D4E;
     }
 
     th {
-      background: #151d2b;
-      color: #bfd0ea;
+      background: #F9FAFB;
+      color: #1A1A2E;
       font-weight: 600;
-      position: sticky;
-      top: 0;
     }
 
     td input[type="text"] {
@@ -172,17 +127,15 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      padding: 14px 16px;
-      border-top: 1px solid var(--line);
-      background: #131a26;
+      margin-top: 16px;
     }
 
     button {
-      border: 1px solid #365075;
-      background: #1b2a41;
-      color: #dbe8fb;
+      border: 1px solid #E5E7EB;
+      background: #FFFFFF;
+      color: #1A1A2E;
       padding: 9px 14px;
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -204,9 +157,9 @@
 
     .run-btn {
       margin-left: auto;
-      background: linear-gradient(180deg, #2f8fff 0%, #1d76dc 100%);
-      border-color: #4f9ff9;
-      color: #f8fcff;
+      background: #1A5CFF;
+      border-color: #1A5CFF;
+      color: #FFFFFF;
     }
 
     .status {
@@ -216,23 +169,23 @@
     }
 
     .status-empty {
-      color: #7d8ca5;
+      color: #6B7280;
     }
 
     .status-running {
-      color: var(--warning);
+      color: #B45309;
       display: inline-flex;
       align-items: center;
       gap: 8px;
     }
 
     .status-success {
-      color: var(--good);
+      color: #047857;
       font-weight: 600;
     }
 
     .status-error {
-      color: var(--bad);
+      color: #B91C1C;
       font-weight: 600;
     }
 
@@ -240,8 +193,8 @@
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      border: 2px solid rgba(255, 209, 107, 0.3);
-      border-top-color: var(--warning);
+      border: 2px solid #E5E7EB;
+      border-top-color: #1A5CFF;
       animation: spin 0.8s linear infinite;
     }
 
@@ -250,13 +203,11 @@
     }
 
     .summary {
-      position: sticky;
-      bottom: 0;
-      background: #0d131f;
-      border: 1px solid #283449;
-      border-radius: 10px;
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
       padding: 11px 14px;
-      color: #d4e4fb;
+      color: #3D3D4E;
       font-size: 14px;
       display: flex;
       align-items: center;
@@ -265,16 +216,16 @@
     }
 
     .summary strong {
-      color: #f3f8ff;
+      color: #1A1A2E;
     }
 
     .summary .ok {
-      color: var(--good);
+      color: #047857;
       font-weight: 700;
     }
 
     .summary .fail {
-      color: var(--bad);
+      color: #B91C1C;
       font-weight: 700;
     }
 
@@ -290,58 +241,54 @@
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="brand">
-      <div class="logo" aria-hidden="true">JW</div>
-      <div>
-        <h1>Bulk Image Uploader</h1>
-        <p>JWX Management API v2 - Media Additional Images</p>
+  <div id="se-sidebar" class="se-sidebar"></div>
+  <div class="se-main">
+    <div class="se-header">
+      <h1>Bulk Image Uploader</h1>
+    </div>
+    <div class="se-content">
+      <section class="panel">
+        <h2 class="panel-head">Authentication</h2>
+        <div class="auth-grid">
+          <label>
+            Site ID
+            <input id="siteIdInput" type="text" placeholder="e.g. abCDefGh" autocomplete="off" />
+          </label>
+          <label>
+            API Key (Management API Key)
+            <input id="apiKeyInput" type="password" placeholder="Paste Management API key" autocomplete="off" />
+          </label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-head">Upload Rows</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 26%;">Media ID</th>
+                <th style="width: 30%;">Image file (.jpg, .jpeg, .png, .webp)</th>
+                <th style="width: 22%;">Label</th>
+                <th style="width: 22%;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="rowsBody"></tbody>
+          </table>
+        </div>
+        <div class="controls">
+          <button id="addRowBtn" type="button">Add Row</button>
+          <button id="removeRowBtn" type="button">Remove Row</button>
+          <button id="runUploadBtn" class="run-btn" type="button">Run Upload</button>
+        </div>
+      </section>
+
+      <div id="summaryBar" class="summary">
+        <strong>Summary</strong>
+        <span id="summaryText">No uploads run yet.</span>
       </div>
     </div>
-  </header>
-
-  <main>
-    <section class="panel">
-      <div class="panel-head">Authentication</div>
-      <div class="auth-grid">
-        <label>
-          Site ID
-          <input id="siteIdInput" type="text" placeholder="e.g. abCDefGh" autocomplete="off" />
-        </label>
-        <label>
-          API Key (Management API Key)
-          <input id="apiKeyInput" type="password" placeholder="Paste Management API key" autocomplete="off" />
-        </label>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-head">Upload Rows</div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 26%;">Media ID</th>
-              <th style="width: 30%;">Image file (.jpg, .jpeg, .png, .webp)</th>
-              <th style="width: 22%;">Label</th>
-              <th style="width: 22%;">Status</th>
-            </tr>
-          </thead>
-          <tbody id="rowsBody"></tbody>
-        </table>
-      </div>
-      <div class="controls">
-        <button id="addRowBtn" type="button">Add Row</button>
-        <button id="removeRowBtn" type="button">Remove Row</button>
-        <button id="runUploadBtn" class="run-btn" type="button">Run Upload</button>
-      </div>
-    </section>
-
-    <div id="summaryBar" class="summary">
-      <strong>Summary</strong>
-      <span id="summaryText">No uploads run yet.</span>
-    </div>
-  </main>
+  </div>
 
   <script>
     const rowsBody = document.getElementById("rowsBody");
@@ -558,5 +505,6 @@
 
     createRow();
   </script>
+  <script src="https://se-shared-assets-dfb3a6.gitlab.io/se-sidebar.js"></script>
 </body>
 </html>
