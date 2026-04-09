@@ -456,6 +456,9 @@
 
       const putResp = await fetch(uploadLink, {
         method: "PUT",
+        headers: {
+          "Content-Type": ""
+        },
         body: file
       });
 
