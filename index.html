@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk Image Uploader</title>
+  <style>
+    :root {
+      --bg: #0f131c;
+      --panel: #161c28;
+      --panel-2: #1d2533;
+      --line: #2c3648;
+      --text: #eef3fb;
+      --muted: #9fb0c7;
+      --accent: #34a6ff;
+      --good: #6fdf9b;
+      --bad: #ff7a7a;
+      --warning: #ffd16b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #0c1017 0%, #131926 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: #0b0f16;
+      border-bottom: 1px solid #222b3b;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 30% 30%, #79ccff 0%, #34a6ff 40%, #0070c9 100%);
+      color: #041520;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      font-size: 12px;
+      box-shadow: 0 0 0 3px rgba(52, 166, 255, 0.2);
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      line-height: 1.2;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    main {
+      width: min(1200px, 94vw);
+      margin: 24px auto 36px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-2);
+      font-weight: 600;
+    }
+
+    .auth-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 14px;
+      padding: 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      border: 1px solid #334159;
+      border-radius: 8px;
+      background: #111826;
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      border: 1px dashed #3b4b66;
+      border-radius: 8px;
+      background: #111826;
+      color: var(--muted);
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(52, 166, 255, 0.18);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+
+    th {
+      background: #151d2b;
+      color: #bfd0ea;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    td input[type="text"] {
+      min-width: 180px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 16px;
+      border-top: 1px solid var(--line);
+      background: #131a26;
+    }
+
+    button {
+      border: 1px solid #365075;
+      background: #1b2a41;
+      color: #dbe8fb;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.05s ease, filter 0.15s ease;
+    }
+
+    button:hover:enabled {
+      filter: brightness(1.08);
+    }
+
+    button:active:enabled {
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .run-btn {
+      margin-left: auto;
+      background: linear-gradient(180deg, #2f8fff 0%, #1d76dc 100%);
+      border-color: #4f9ff9;
+      color: #f8fcff;
+    }
+
+    .status {
+      min-width: 220px;
+      white-space: normal;
+      line-height: 1.25;
+    }
+
+    .status-empty {
+      color: #7d8ca5;
+    }
+
+    .status-running {
+      color: var(--warning);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-success {
+      color: var(--good);
+      font-weight: 600;
+    }
+
+    .status-error {
+      color: var(--bad);
+      font-weight: 600;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 209, 107, 0.3);
+      border-top-color: var(--warning);
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .summary {
+      position: sticky;
+      bottom: 0;
+      background: #0d131f;
+      border: 1px solid #283449;
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: #d4e4fb;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .summary strong {
+      color: #f3f8ff;
+    }
+
+    .summary .ok {
+      color: var(--good);
+      font-weight: 700;
+    }
+
+    .summary .fail {
+      color: var(--bad);
+      font-weight: 700;
+    }
+
+    @media (max-width: 860px) {
+      .auth-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .run-btn {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">JW</div>
+      <div>
+        <h1>Bulk Image Uploader</h1>
+        <p>JWX Management API v2 - Media Additional Images</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="panel-head">Authentication</div>
+      <div class="auth-grid">
+        <label>
+          Site ID
+          <input id="siteIdInput" type="text" placeholder="e.g. abCDefGh" autocomplete="off" />
+        </label>
+        <label>
+          API Key (Management API Key)
+          <input id="apiKeyInput" type="password" placeholder="Paste Management API key" autocomplete="off" />
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">Upload Rows</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 26%;">Media ID</th>
+              <th style="width: 30%;">Image file (.jpg, .jpeg, .png, .webp)</th>
+              <th style="width: 22%;">Label</th>
+              <th style="width: 22%;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="rowsBody"></tbody>
+        </table>
+      </div>
+      <div class="controls">
+        <button id="addRowBtn" type="button">Add Row</button>
+        <button id="removeRowBtn" type="button">Remove Row</button>
+        <button id="runUploadBtn" class="run-btn" type="button">Run Upload</button>
+      </div>
+    </section>
+
+    <div id="summaryBar" class="summary">
+      <strong>Summary</strong>
+      <span id="summaryText">No uploads run yet.</span>
+    </div>
+  </main>
+
+  <script>
+    const rowsBody = document.getElementById("rowsBody");
+    const addRowBtn = document.getElementById("addRowBtn");
+    const removeRowBtn = document.getElementById("removeRowBtn");
+    const runUploadBtn = document.getElementById("runUploadBtn");
+    const summaryText = document.getElementById("summaryText");
+
+    const allowedExt = [".jpg", ".jpeg", ".png", ".webp"];
+    const allowedMime = new Set(["image/jpeg", "image/png", "image/webp"]);
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function inferMimeFromName(fileName) {
+      const lower = fileName.toLowerCase();
+      if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+      if (lower.endsWith(".png")) return "image/png";
+      if (lower.endsWith(".webp")) return "image/webp";
+      return "application/octet-stream";
+    }
+
+    function createRow() {
+      const tr = document.createElement("tr");
+      tr.innerHTML = [
+        "<td><input type='text' class='media-id' placeholder='Media ID' autocomplete='off' /></td>",
+        "<td><input type='file' class='image-file' accept='.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp' /></td>",
+        "<td><input type='text' class='label' placeholder='Label' autocomplete='off' /></td>",
+        "<td class='status status-empty'>-</td>"
+      ].join("");
+      rowsBody.appendChild(tr);
+      return tr;
+    }
+
+    function setRowStatus(tr, state, message) {
+      const statusCell = tr.querySelector(".status");
+      if (state === "running") {
+        statusCell.className = "status status-running";
+        statusCell.innerHTML = "<span class='spinner' aria-hidden='true'></span><span>Uploading...</span>";
+        return;
+      }
+      if (state === "success") {
+        statusCell.className = "status status-success";
+        statusCell.textContent = "✅ Success";
+        return;
+      }
+      if (state === "error") {
+        statusCell.className = "status status-error";
+        statusCell.innerHTML = "❌ " + escapeHtml(message || "Error");
+        return;
+      }
+      statusCell.className = "status status-empty";
+      statusCell.textContent = "-";
+    }
+
+    function getRows() {
+      return Array.from(rowsBody.querySelectorAll("tr"));
+    }
+
+    function readErrorText(responseText, fallbackMessage) {
+      try {
+        const parsed = JSON.parse(responseText);
+        if (parsed && typeof parsed === "object") {
+          if (parsed.message) return String(parsed.message);
+          if (parsed.error) return String(parsed.error);
+          if (parsed.errors && Array.isArray(parsed.errors) && parsed.errors[0]) {
+            return String(parsed.errors[0].message || parsed.errors[0]);
+          }
+        }
+      } catch (_) {
+        // Ignore parse errors and use raw text.
+      }
+      return responseText || fallbackMessage;
+    }
+
+    async function uploadRow({ siteId, apiKey, mediaId, label, file }) {
+      const createUrl = `https://api.jwplayer.com/v2/sites/${encodeURIComponent(siteId)}/media/${encodeURIComponent(mediaId)}/images/`;
+      const createPayload = {
+        metadata: { label: label || "" },
+        upload: { method: "direct" }
+      };
+
+      const createResp = await fetch(createUrl, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(createPayload)
+      });
+
+      if (!createResp.ok) {
+        const text = await createResp.text();
+        throw new Error(readErrorText(text, `Create image failed (${createResp.status})`));
+      }
+
+      const createData = await createResp.json();
+      const uploadLink =
+        createData.upload_link ||
+        (createData.upload && (createData.upload.upload_link || createData.upload.link)) ||
+        null;
+
+      if (!uploadLink) {
+        throw new Error("upload_link missing in create response");
+      }
+
+      const putResp = await fetch(uploadLink, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type || inferMimeFromName(file.name)
+        },
+        body: file
+      });
+
+      if (!putResp.ok) {
+        const text = await putResp.text();
+        throw new Error(readErrorText(text, `Image upload failed (${putResp.status})`));
+      }
+    }
+
+    function validateFile(file) {
+      if (!file) return "Image file is required";
+      const lower = file.name.toLowerCase();
+      const hasAllowedExt = allowedExt.some((ext) => lower.endsWith(ext));
+      const hasAllowedMime = allowedMime.has(file.type);
+      if (!hasAllowedExt && !hasAllowedMime) {
+        return "Unsupported file type";
+      }
+      return null;
+    }
+
+    async function runUploadsSequentially() {
+      const siteId = document.getElementById("siteIdInput").value.trim();
+      const apiKey = document.getElementById("apiKeyInput").value.trim();
+
+      if (!siteId || !apiKey) {
+        summaryText.innerHTML = "<span class='fail'>Site ID and API Key are required.</span>";
+        return;
+      }
+
+      const rows = getRows();
+      if (rows.length === 0) {
+        summaryText.innerHTML = "<span class='fail'>Add at least one row.</span>";
+        return;
+      }
+
+      let succeeded = 0;
+      let failed = 0;
+
+      addRowBtn.disabled = true;
+      removeRowBtn.disabled = true;
+      runUploadBtn.disabled = true;
+
+      for (const row of rows) {
+        const mediaId = row.querySelector(".media-id").value.trim();
+        const label = row.querySelector(".label").value.trim();
+        const fileInput = row.querySelector(".image-file");
+        const file = fileInput.files && fileInput.files[0];
+
+        if (!mediaId) {
+          setRowStatus(row, "error", "Media ID is required");
+          failed += 1;
+          continue;
+        }
+
+        const fileError = validateFile(file);
+        if (fileError) {
+          setRowStatus(row, "error", fileError);
+          failed += 1;
+          continue;
+        }
+
+        setRowStatus(row, "running");
+        try {
+          await uploadRow({ siteId, apiKey, mediaId, label, file });
+          setRowStatus(row, "success");
+          succeeded += 1;
+        } catch (error) {
+          setRowStatus(row, "error", error && error.message ? error.message : String(error));
+          failed += 1;
+        }
+      }
+
+      runUploadBtn.disabled = false;
+      addRowBtn.disabled = false;
+      removeRowBtn.disabled = false;
+
+      summaryText.innerHTML = `<span class="ok">${succeeded} succeeded</span> / <span class="fail">${failed} failed</span>`;
+    }
+
+    addRowBtn.addEventListener("click", () => {
+      createRow();
+    });
+
+    removeRowBtn.addEventListener("click", () => {
+      const rows = getRows();
+      if (rows.length > 1) {
+        rows[rows.length - 1].remove();
+      } else if (rows.length === 1) {
+        rows[0].querySelector(".media-id").value = "";
+        rows[0].querySelector(".image-file").value = "";
+        rows[0].querySelector(".label").value = "";
+        setRowStatus(rows[0], "empty");
+      }
+    });
+
+    runUploadBtn.addEventListener("click", runUploadsSequentially);
+
+    createRow();
+  </script>
+</body>
+</html>
