@@ -90,6 +90,50 @@
       font-size: 12px;
     }
 
+    .file-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 300px;
+    }
+
+    .file-cell .image-file {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .file-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #6B7280;
+      white-space: nowrap;
+    }
+
+    .file-preview.is-hidden {
+      display: none;
+    }
+
+    .file-thumb {
+      max-height: 48px;
+      max-width: 72px;
+      border-radius: 6px;
+      border: 1px solid #E5E7EB;
+      object-fit: cover;
+      background: #FFFFFF;
+    }
+
+    .view-link {
+      color: #1A5CFF;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .view-link:hover {
+      text-decoration: underline;
+    }
+
     input:focus {
       border-color: #1A5CFF;
       box-shadow: 0 0 0 3px rgba(26, 92, 255, 0.14);
@@ -328,12 +372,58 @@
       const tr = document.createElement("tr");
       tr.innerHTML = [
         "<td><input type='text' class='media-id' placeholder='Media ID' autocomplete='off' /></td>",
-        "<td><input type='file' class='image-file' accept='.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp' /></td>",
+        "<td><div class='file-cell'><input type='file' class='image-file' accept='.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp' /><div class='file-preview is-hidden'><img class='file-thumb' alt='Selected image preview' /><a class='view-link' href='#' target='_blank' rel='noopener noreferrer'>View</a></div></div></td>",
         "<td><input type='text' class='label' placeholder='Label' autocomplete='off' /></td>",
         "<td class='status status-empty'>-</td>"
       ].join("");
+      const fileInput = tr.querySelector(".image-file");
+      fileInput.addEventListener("change", () => {
+        updateFilePreview(tr);
+      });
       rowsBody.appendChild(tr);
       return tr;
+    }
+
+    function updateFilePreview(tr) {
+      const fileInput = tr.querySelector(".image-file");
+      const preview = tr.querySelector(".file-preview");
+      const thumb = tr.querySelector(".file-thumb");
+      const link = tr.querySelector(".view-link");
+
+      const previousUrl = fileInput.dataset.previewUrl;
+      if (previousUrl) {
+        URL.revokeObjectURL(previousUrl);
+        delete fileInput.dataset.previewUrl;
+      }
+
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) {
+        preview.classList.add("is-hidden");
+        thumb.removeAttribute("src");
+        link.removeAttribute("href");
+        return;
+      }
+
+      const objectUrl = URL.createObjectURL(file);
+      fileInput.dataset.previewUrl = objectUrl;
+      thumb.src = objectUrl;
+      link.href = objectUrl;
+      preview.classList.remove("is-hidden");
+    }
+
+    function clearFilePreview(tr) {
+      const fileInput = tr.querySelector(".image-file");
+      const preview = tr.querySelector(".file-preview");
+      const thumb = tr.querySelector(".file-thumb");
+      const link = tr.querySelector(".view-link");
+      const previousUrl = fileInput.dataset.previewUrl;
+      if (previousUrl) {
+        URL.revokeObjectURL(previousUrl);
+        delete fileInput.dataset.previewUrl;
+      }
+      preview.classList.add("is-hidden");
+      thumb.removeAttribute("src");
+      link.removeAttribute("href");
     }
 
     function setRowStatus(tr, state, message) {
@@ -499,11 +589,14 @@
     removeRowBtn.addEventListener("click", () => {
       const rows = getRows();
       if (rows.length > 1) {
-        rows[rows.length - 1].remove();
+        const lastRow = rows[rows.length - 1];
+        clearFilePreview(lastRow);
+        lastRow.remove();
       } else if (rows.length === 1) {
         rows[0].querySelector(".media-id").value = "";
         rows[0].querySelector(".image-file").value = "";
         rows[0].querySelector(".label").value = "";
+        clearFilePreview(rows[0]);
         setRowStatus(rows[0], "empty");
       }
     });
