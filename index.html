@@ -22,6 +22,7 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 24px;
+      padding-left: calc(var(--se-sidebar-width, 260px) + 24px);
     }
 
     .se-header {
@@ -227,6 +228,12 @@
     .summary .fail {
       color: #B91C1C;
       font-weight: 700;
+    }
+
+    @media (max-width: 1024px) {
+      .se-main {
+        padding-left: 24px;
+      }
     }
 
     @media (max-width: 860px) {
