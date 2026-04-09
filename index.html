@@ -456,9 +456,6 @@
 
       const putResp = await fetch(uploadLink, {
         method: "PUT",
-        headers: {
-          "Content-Type": file.type || inferMimeFromName(file.name)
-        },
         body: file
       });
 
